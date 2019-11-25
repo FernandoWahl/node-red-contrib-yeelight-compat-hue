@@ -1,10 +1,8 @@
 // https://www.yeelight.com/download/Yeelight_Inter-Operation_Spec.pdf
 // https://github.com/song940/node-yeelight/blob/master/index.js
-
-import Yeelight from 'yeelight2';
 import convert from 'color-convert';
 
-import { sanitizeState, hexToRgbInt, normalize, colorTemperatureToRgbInt, clamp } from './utils';
+import { sanitizeState, hexToRgbInt, normalize, clamp } from './utils';
 
 export default function YeeLightNodeOut(RED) {
     return function(config) {
@@ -25,7 +23,7 @@ export default function YeeLightNodeOut(RED) {
                 return node.error(`Yeelight: Invalid payload\n${msg.payload}`);
             }
 
-            const { on, hex, bri, hue, sat, duration = 500, ct } = msg.payload;
+            let { on, hex, bri, hue, sat, duration = 500, ct } = msg.payload;
 
             node.serverConfig.yeelight
                 .sync()
@@ -39,7 +37,7 @@ export default function YeeLightNodeOut(RED) {
                     // if the light is on, turn it off and if the light is off: turn it on
                     // so, the param on car noew have three states: true, false or "toggle"
                     if (on == 'toggle') {
-                        on != currentState.on;
+                        on = !currentState.on
                     }
                     // I need to move this test here to keep the off status functionnal
                     if (on === false) {
